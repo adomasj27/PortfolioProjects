@@ -98,12 +98,14 @@ WHERE row_num > 1;
 
 -- 2. Standardizing data
 
+-- Removing any leading or trailing spaces from company column
 SELECT company, TRIM(company)
 FROM layoffs_staging2;
 
 UPDATE layoffs_staging2
 SET company = TRIM(company);
 
+-- Standardizing the industry column
 SELECT DISTINCT industry
 FROM layoffs_staging2
 ORDER BY 1;
@@ -119,6 +121,7 @@ WHERE industry LIKE 'Crypto%';
 SELECT DISTINCT industry
 FROM layoffs_staging2;
 
+-- Standardizing location column
 SELECT DISTINCT location
 FROM layoffs_staging2
 ORDER BY 1;
@@ -140,8 +143,7 @@ UPDATE layoffs_staging2
 SET country = TRIM(TRAILING '.' FROM country)
 WHERE country like 'United States%';
 
--- date formatting in MySQL
-
+-- Formatting date column
 SELECT `date`,
 STR_TO_DATE(`date`, '%m/%d/%Y')
 FROM layoffs_staging2;
@@ -157,6 +159,7 @@ FROM layoffs_staging2;
 
 -- 3. Null and blank values
 
+-- Replacing blank values with null
 SELECT *
 FROM layoffs_staging2
 WHERE total_laid_off IS NULL
@@ -166,6 +169,7 @@ UPDATE layoffs_staging2
 SET industry = NULL
 WHERE industry = '';
 
+-- Replacing null/blank values with known industry values where possible
 SELECT *
 FROM layoffs_staging2
 WHERE industry IS NULL
@@ -195,6 +199,7 @@ WHERE company LIKE 'Bally%';
 
 -- 4. Removing any columns and rows that aren't necessary
 
+-- Removing rows with null values in both total_laid_off as well as total_laid_off column
 SELECT *
 FROM layoffs_staging2
 WHERE total_laid_off IS NULL
@@ -205,6 +210,7 @@ FROM layoffs_staging2
 WHERE total_laid_off IS NULL
 AND percentage_laid_off IS NULL;
 
+-- Dropping the row_num column
 SELECT *
 FROM layoffs_staging2;
 
